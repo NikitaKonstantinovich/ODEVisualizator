@@ -19,14 +19,30 @@ find_package(OpenGL REQUIRED)
 # Собираем исполняемый файл
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/MainWindow.cpp
-    include/MainWindow.h
-    include/Viewport3DWorkspace.h
-    src/Viewport3DWorkspace.cpp
-    include/WorkspaceDockWidget.h
-    src/WorkspaceDockWidget.cpp
-    include/LyapunovWorkspace.h 
-    src/LyapunowWorkspace.cpp
+    src/ui/MainWindow.cpp
+    src/ui/WorkspaceDockWidget.cpp
+
+    src/workspaces/Viewport3DWorkspace.cpp
+    src/workspaces/LyapunovWorkspace.cpp
+
+    src/camera/Camera.cpp
+
+    src/renderers/AxisRenderer.cpp 
+    src/renderers/GridRenderer.cpp
+    
+    include/ui/WorkspaceDockWidget.h
+    include/ui/MainWindow.h
+
+    include/workspaces/Viewport3DWorkspace.h
+    include/workspaces/LyapunovWorkspace.h 
+    
+    include/camera/Camera.h
+
+    include/renderers/AxisRenderer.h 
+    include/renderers/GridRenderer.h
+
+
+
 )
 
 # Пусть компилятор ищет наши .h в папке include/
