@@ -13,13 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PREFIX_PATH "C:/Qt/6.9.1/msvc2022_64" CACHE STRING "Qt6 install path")
 
 # Где искать модули Qt6
-find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS Widgets OpenGL OpenGLWidgets REQUIRED)
 
 # Собираем исполняемый файл
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/MainWindow.cpp
     include/MainWindow.h
+    include/Viewport3DWorkspace.h
+    src/Viewport3DWorkspace.cpp
 )
 
 # Пусть компилятор ищет наши .h в папке include/
@@ -30,7 +32,7 @@ target_include_directories(${PROJECT_NAME}
 
 # Линкуем с Qt6 Widgets и OpenGL
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE Qt6::Widgets Qt6::OpenGL
+    PRIVATE Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets
 )
 
 # Устанавливаем папку для сборки ui/ресурсов

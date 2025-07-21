@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "Viewport3DWorkspace.h"
 #include <QApplication>
 #include <QTabWidget>
 #include <QMenuBar>
