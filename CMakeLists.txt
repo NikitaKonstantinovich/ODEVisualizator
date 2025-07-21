@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(ODEVisualizator VERSION 0.1.0 LANGUAGES CXX)
 
+# Включаем автоматический запуск moc, uic и rcc
+ set(CMAKE_AUTOMOC ON)
+ set(CMAKE_AUTOUIC ON)
+ set(CMAKE_AUTORCC ON)
+
 # Включаем C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,6 +18,14 @@ find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
 # Собираем исполняемый файл
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/MainWindow.cpp
+    include/MainWindow.h
+)
+
+# Пусть компилятор ищет наши .h в папке include/
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 # Линкуем с Qt6 Widgets и OpenGL
