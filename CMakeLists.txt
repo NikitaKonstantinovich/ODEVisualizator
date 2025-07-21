@@ -22,6 +22,10 @@ add_executable(${PROJECT_NAME}
     include/MainWindow.h
     include/Viewport3DWorkspace.h
     src/Viewport3DWorkspace.cpp
+    include/WorkspaceDockWidget.h
+    src/WorkspaceDockWidget.cpp
+    include/LyapunovWorkspace.h 
+    src/LyapunowWorkspace.cpp
 )
 
 # Пусть компилятор ищет наши .h в папке include/

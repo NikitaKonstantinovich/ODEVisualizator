@@ -5,6 +5,7 @@
 
 class QTabWidget;
 class QLabel;
+class WorkspaceDockWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -14,8 +15,7 @@ public:
 
 private slots:
     void onNewWorkspace();
-    void onCloseCurrentWorkspace();
-    void onWorkspaceChanged(int index);
+    void onCloseAllWorkspaces();
 
 private:
     void setupMenu();

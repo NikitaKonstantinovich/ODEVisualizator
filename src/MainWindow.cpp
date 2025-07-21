@@ -1,5 +1,6 @@
 #include "MainWindow.h"
-#include "Viewport3DWorkspace.h"
+#include "WorkspaceDockWidget.h"
+
 #include <QApplication>
 #include <QTabWidget>
 #include <QMenuBar>
@@ -7,22 +8,22 @@
 #include <QLabel>
 #include <QAction>
 #include <QWidget>
+#include <QObject>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
-    m_workspaceTabs(new QTabWidget(this)),
     m_actionLabel(new QLabel(this)),
     m_versionLabel(new QLabel(QString("v%1").arg(QApplication::applicationVersion()), this))
 {
-    setCentralWidget(m_workspaceTabs);
+    // Центральный «пустой» виджет под док-области
+    QWidget* central = new QWidget(this);
+    setCentralWidget(central);
 
     setupMenu();
     setupStatusBar();
 
-    // Создаем первое пустое пространство
+    // Создаём первое окно-рабочее пространство
     onNewWorkspace();
-    connect(m_workspaceTabs, &QTabWidget::currentChanged,
-        this, &MainWindow::onWorkspaceChanged);
 }
 
 MainWindow::~MainWindow() = default;
@@ -33,7 +34,7 @@ void MainWindow::setupMenu() {
     connect(newWs, &QAction::triggered, this, &MainWindow::onNewWorkspace);
 
     QAction* closeWs = fileMenu->addAction(tr("Close Workspace"));
-    connect(closeWs, &QAction::triggered, this, &MainWindow::onCloseCurrentWorkspace);
+    connect(closeWs, &QAction::triggered, this, &MainWindow::onCloseAllWorkspaces);
 
     fileMenu->addSeparator();
     QAction* exitApp = fileMenu->addAction(tr("Exit"));
@@ -49,24 +50,21 @@ void MainWindow::setupStatusBar() {
 }
 
 void MainWindow::onNewWorkspace() {
-    int count = m_workspaceTabs->count() + 1;
-    QWidget* page = new QWidget();
-    m_workspaceTabs->addTab(page, tr("Workspace %1").arg(count));
-    m_workspaceTabs->setCurrentWidget(page);
-    m_actionLabel->setText(tr("Created workspace %1").arg(count));
+    static int counter = 1;
+    // Создаём док-виджет Blender-style
+    auto* dock = new WorkspaceDockWidget(tr("Workspace %1").arg(counter++), this);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    dock->show();
+
+    m_actionLabel->setText(tr("Created workspace %1").arg(counter - 1));
 }
 
-void MainWindow::onCloseCurrentWorkspace() {
-    int idx = m_workspaceTabs->currentIndex();
-    if (idx >= 0) {
-        m_workspaceTabs->removeTab(idx);
-        m_actionLabel->setText(tr("Closed workspace %1").arg(idx + 1));
+void MainWindow::onCloseAllWorkspaces() {
+    // Закрываем все WorkspaceDockWidget
+    const auto docks = this->findChildren<WorkspaceDockWidget*>();
+    for (WorkspaceDockWidget* dock : docks) {
+        dock->close();
     }
+    m_actionLabel->setText(tr("Closed all workspaces"));
 }
 
-void MainWindow::onWorkspaceChanged(int index) {
-    if (index >= 0)
-        m_actionLabel->setText(tr("Switched to workspace %1").arg(index + 1));
-    else
-        m_actionLabel->clear();
-}
