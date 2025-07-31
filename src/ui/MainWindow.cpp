@@ -1,23 +1,30 @@
 #include "ui/MainWindow.h"
 #include "ui/WorkspaceContainer.h"
 
-#include <QSplitter>
+//#include <QSplitter>
 #include <QMenuBar>
 #include <QAction>
+
+#include <DockManager.h>
+#include <DockWidget.h>
 
 namespace ODV {
 
     MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent)
     {
-        setDockOptions(DockOption::AllowTabbedDocks |
-                       DockOption::AllowNestedDocks |
-                       DockOption::AnimatedDocks);        // плавна€ анимаци€
-        setDockNestingEnabled(true);                      // многоуровневое вложение
+        //setDockOptions(DockOption::AllowTabbedDocks |
+        //               DockOption::AllowNestedDocks |
+        //               DockOption::AnimatedDocks);        // плавна€ анимаци€
+        //setDockNestingEnabled(true);                      // многоуровневое вложение
 
-        // временный центральный пустой виджет, чтобы панель можно было
-        // стыковать со всех сторон
-        setCentralWidget(new QWidget(this));
+        //// временный центральный пустой виджет, чтобы панель можно было
+        //// стыковать со всех сторон
+        //setCentralWidget(new QWidget(this));
+        using ads::CDockManager;
+        CDockManager::setConfigFlags(CDockManager::DefaultOpaqueConfig);   // глобальные флаги :contentReference[oaicite:4]{index=4}
+
+        m_dockMgr = new CDockManager(this);           // создаЄм менеджер
 
         m_workspaceMenu = menuBar()->addMenu(tr("&Workspace"));
         m_actNewWorkspace = m_workspaceMenu->addAction(tr("New workspaceЕ"));
@@ -28,14 +35,9 @@ namespace ODV {
     void MainWindow::addWorkspaceDock(QWidget* workspace,
         const QString& title)
     {
-        auto* dock = new QDockWidget(title, this);
+        auto* dock = new ads::CDockWidget(title, this);
         dock->setWidget(workspace);
-        dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-        dock->setFeatures(QDockWidget::DockWidgetMovable |
-            QDockWidget::DockWidgetFloatable |
-            QDockWidget::DockWidgetClosable);
-        dock->setAttribute(Qt::WA_NativeWindow);          // корректное всплытие на 2-й монитор
-        addDockWidget(Qt::LeftDockWidgetArea, dock);      // базова€ позици€
+        m_dockMgr->addDockWidget(ads::CenterDockWidgetArea, dock);
 
         //  сразу табом к соседней панели:
         // tabifyDockWidget(existingDock, dock);

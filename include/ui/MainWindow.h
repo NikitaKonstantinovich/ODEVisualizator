@@ -1,6 +1,6 @@
 #pragma once
-
-#include <QDockWidget>
+#include <DockManager.h>
+#include <DockWidget.h>
 #include <QMainWindow>
 #include <QSplitter>
 #include <QAction>
@@ -18,6 +18,8 @@ namespace ODV {
 
     private:
         void addWorkspaceDock(QWidget* workspace, const QString& title);
+
+        ads::CDockManager* m_dockMgr{ nullptr };
 
         QMenu* m_workspaceMenu{ nullptr };
         QAction* m_actNewWorkspace{ nullptr };
