@@ -1,71 +1,50 @@
 #include "ui/MainWindow.h"
-#include "workspaces/Viewport3DWorkspace.h"   
-#include <QApplication>
-#include <QTabWidget>
+#include "ui/WorkspaceContainer.h"
+
+#include <QSplitter>
 #include <QMenuBar>
-#include <QStatusBar>
-#include <QLabel>
 #include <QAction>
 
-MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent),
-    m_workspaceTabs(new QTabWidget(this)),
-    m_actionLabel(new QLabel(this)),
-    m_versionLabel(new QLabel(QString("v%1").arg(QApplication::applicationVersion()), this))
-{
-    setCentralWidget(m_workspaceTabs);
+namespace ODV {
 
-    setupMenu();
-    setupStatusBar();
+    MainWindow::MainWindow(QWidget* parent)
+        : QMainWindow(parent)
+    {
+        setDockOptions(DockOption::AllowTabbedDocks |
+                       DockOption::AllowNestedDocks |
+                       DockOption::AnimatedDocks);        // плавна€ анимаци€
+        setDockNestingEnabled(true);                      // многоуровневое вложение
 
-    // —оздаем первое пустое пространство
-    onNewWorkspace();
-    connect(m_workspaceTabs, &QTabWidget::currentChanged,
-        this, &MainWindow::onWorkspaceChanged);
-}
+        // временный центральный пустой виджет, чтобы панель можно было
+        // стыковать со всех сторон
+        setCentralWidget(new QWidget(this));
 
-MainWindow::~MainWindow() = default;
-
-void MainWindow::setupMenu() {
-    auto fileMenu = menuBar()->addMenu(tr("&File"));
-    QAction* newWs = fileMenu->addAction(tr("New Workspace"));
-    connect(newWs, &QAction::triggered, this, &MainWindow::onNewWorkspace);
-
-    QAction* closeWs = fileMenu->addAction(tr("Close Workspace"));
-    connect(closeWs, &QAction::triggered, this, &MainWindow::onCloseCurrentWorkspace);
-
-    fileMenu->addSeparator();
-    QAction* exitApp = fileMenu->addAction(tr("Exit"));
-    connect(exitApp, &QAction::triggered, qApp, &QApplication::quit);
-
-    menuBar()->addMenu(tr("&View"));  // пока заглушка дл€ будущих пунктов
-}
-
-void MainWindow::setupStatusBar() {
-    statusBar()->addWidget(m_actionLabel, 1);
-    statusBar()->addPermanentWidget(m_versionLabel);
-}
-
-void MainWindow::onNewWorkspace() {
-    int count = m_workspaceTabs->count() + 1;
-    // теперь класс в неймспейсе ODV::workspace
-    auto* page = new ODV::Viewport3DWorkspace(this);
-    m_workspaceTabs->addTab(page, tr("Workspace %1").arg(count));
-    m_workspaceTabs->setCurrentWidget(page);
-    m_actionLabel->setText(tr("Created workspace %1").arg(count));
-}
-
-void MainWindow::onCloseCurrentWorkspace() {
-    int idx = m_workspaceTabs->currentIndex();
-    if (idx >= 0) {
-        m_workspaceTabs->removeTab(idx);
-        m_actionLabel->setText(tr("Closed workspace %1").arg(idx + 1));
+        m_workspaceMenu = menuBar()->addMenu(tr("&Workspace"));
+        m_actNewWorkspace = m_workspaceMenu->addAction(tr("New workspaceЕ"));
+        connect(m_actNewWorkspace, &QAction::triggered,
+            this, &MainWindow::onNewWorkspaceRequested);
     }
-}
 
-void MainWindow::onWorkspaceChanged(int index) {
-    if (index >= 0)
-        m_actionLabel->setText(tr("Switched to workspace %1").arg(index + 1));
-    else
-        m_actionLabel->clear();
-}
+    void MainWindow::addWorkspaceDock(QWidget* workspace,
+        const QString& title)
+    {
+        auto* dock = new QDockWidget(title, this);
+        dock->setWidget(workspace);
+        dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+        dock->setFeatures(QDockWidget::DockWidgetMovable |
+            QDockWidget::DockWidgetFloatable |
+            QDockWidget::DockWidgetClosable);
+        dock->setAttribute(Qt::WA_NativeWindow);          // корректное всплытие на 2-й монитор
+        addDockWidget(Qt::LeftDockWidgetArea, dock);      // базова€ позици€
+
+        //  сразу табом к соседней панели:
+        // tabifyDockWidget(existingDock, dock);
+    }
+
+    void MainWindow::onNewWorkspaceRequested()
+    {
+        auto* w = new Viewport3DWorkspace(this);          // или другой тип
+        addWorkspaceDock(w, tr("Viewport 3D"));
+    }
+
+} // namespace ODV

@@ -43,7 +43,7 @@ add_executable(${PROJECT_NAME}
 
 
 
-)
+ "include/ui/WorkspaceContainer.h" "src/ui/WorkspaceContainer.cpp")
 
 # Пусть компилятор ищет наши .h в папке include/
 target_include_directories(${PROJECT_NAME}

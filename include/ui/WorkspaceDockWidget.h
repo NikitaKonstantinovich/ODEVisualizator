@@ -1,6 +1,9 @@
 #pragma once
 
 #include <QDockWidget>
+#include <QComboBox>
+#include <QStackedWidget>
+#include <QHBoxLayout>
 
 namespace ODV {
     class Viewport3DWorkspace;

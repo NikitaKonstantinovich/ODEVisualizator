@@ -1,23 +1,26 @@
 #pragma once
 
+#include <QDockWidget>
 #include <QMainWindow>
-#include <QTabWidget>
-#include <QLabel>
+#include <QSplitter>
+#include <QAction>
+#include <QMenuBar>
 
-class MainWindow : public QMainWindow {
-    Q_OBJECT
-public:
-    explicit MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
+namespace ODV {
 
-private:
-    void setupMenu();
-    void setupStatusBar();
-    void onNewWorkspace();
-    void onCloseCurrentWorkspace();
-    void onWorkspaceChanged(int index);
+    class MainWindow : public QMainWindow {
+        Q_OBJECT
+    public:
+        explicit MainWindow(QWidget* parent = nullptr);
 
-    QTabWidget* m_workspaceTabs;
-    QLabel* m_actionLabel;
-    QLabel* m_versionLabel;
-};
+    private slots:
+        void onNewWorkspaceRequested();
+
+    private:
+        void addWorkspaceDock(QWidget* workspace, const QString& title);
+
+        QMenu* m_workspaceMenu{ nullptr };
+        QAction* m_actNewWorkspace{ nullptr };
+    };
+
+} // namespace ODV
